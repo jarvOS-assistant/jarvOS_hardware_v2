@@ -39,11 +39,14 @@ class JarvOSCharacteristic(Characteristic):
         self.last_recognized_text = ""
 
     def listen_for_speech(self):
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index=1) as source:
             while True:
                 try:
                     audio = self.speech_recognizer.listen(source, timeout=5, phrase_time_limit=10)
-                    text = self.speech_recognizer.recognize_whisper(audio_data=audio, model="tiny.en", language="english")
+                    print("adjusting for ambient noise")
+                    self.speech_recognizer.adjust_for_ambient_noise(audio, duration = 1)
+                    print("listening")
+                    text = self.speech_recognizer.recognize_whisper(audio_data=audio, model="small.en", language="english")
                     print(text)
                     self.last_recognized_text = text
                     self.set_text_callback()
